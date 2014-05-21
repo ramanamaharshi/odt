@@ -447,7 +447,7 @@ class ODT {
 	public static function vExitFixed ($mValue, $iDepth = -1) {
 		self::vExit($mValue, $iDepth, array('aAdditionalStyles' => array(
 			'position' => 'fixed',
-			'opacity' => '0.66',
+			'opacity' => '0.9',
 			'max-height' => '100%',
 			'max-width' => '100%',
 			'left' => 0,
