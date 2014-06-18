@@ -446,12 +446,15 @@ class ODT {
 	
 	public static function vExitFixed ($mValue, $iDepth = -1) {
 		self::vExit($mValue, $iDepth, array('aAdditionalStyles' => array(
-			'position' => 'fixed',
 			'opacity' => '0.9',
-			'max-height' => '100%',
-			'max-width' => '100%',
-			'left' => 0,
-			'top' => 0,
+			'position' => 'fixed',
+			'overflow-y' => 'auto',
+			'max-height' => '80%%',
+			'max-width' => '80%%',
+			'padding' => '10px',
+			'margin' => '10px',
+			'left' => '0',
+			'top' => '0',
 		)));
 	}
 	
@@ -834,7 +837,6 @@ class ODT {
 	
 	
 	
-	
 	public static function removeBasePath ($sPath) {
 		
 		return str_replace(self::$sBasePath, '', $sPath);
@@ -844,4 +846,23 @@ class ODT {
 	
 	
 	
+	public static function aGetExecutionTimes () {
+		return Profiler::aGetExecutionTimes();
+	}
+	public static function sGetExecutionTimeStackHtml () {
+		return Profiler::sGetExecutionTimeStackHtml();
+	}
+	public static function vStartMeasurement ($sMeasurementKey) {
+		return Profiler::vStartMeasurement($sMeasurementKey);
+	}
+	public static function vStopMeasurement ($sMeasurementKey) {
+		return Profiler::vStopMeasurement($sMeasurementKey);
+	}
+	
+	
+	
+	
 }
+
+
+
