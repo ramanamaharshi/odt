@@ -8,10 +8,10 @@ class ODT {
 	
 	
 	
-	public static $aActivationRequest = array();
-	public static $aFindDumpsRequest = array('odt_find' => 1);
-	
 	public static $bFindDumpsAndLogs = false;
+	public static $aFindDumpsRequest = array('odt_find' => 1);
+	public static $aActivationRequest = array();
+	public static $bClosedMode = false;
 	
 	public static $bLog = true;
 	public static $iDumpFontSize = 13;
@@ -133,7 +133,7 @@ class ODT {
 			self::log($sString, $sFile, -1, null, $iCutFunctions + 1);
 		}
 		
-		/*$aStack = self::getStack($iCutFunctions + 1);
+		/*$aStack = self::aGetStack($iCutFunctions + 1);
 		
 		$iMaxLength = 0;
 		foreach ($aStack as $iKey => $aLayer) {
@@ -154,7 +154,7 @@ class ODT {
 	
 	public static function aGetStackAsStringArray ($iCutFunctions = 0) {
 		
-		$aStack = self::getStack($iCutFunctions + 1);
+		$aStack = self::aGetStack($iCutFunctions + 1);
 		
 		$iMaxLength = 0;
 		foreach ($aStack as $iKey => $aLayer) {
@@ -177,7 +177,7 @@ class ODT {
 	
 	
 	
-	public static function getStack ($iCutFunctions = 0) {
+	private static function aGetStack ($iCutFunctions = 0) {
 		
 		$aStack = debug_backtrace();
 		for ($i = 0; $i < $iCutFunctions; $i ++) {
@@ -264,7 +264,7 @@ class ODT {
 		
 		if (!self::$bLogCleared) {
 			self::$bLogCleared = true;
-			self::logClear();
+			self::vClearLog();
 		}
 		
 		$bFindLogs = false;
@@ -301,7 +301,7 @@ class ODT {
 		}
 		/// debugcodes END
 		
-		self::beforeLog($sFile);
+		self::vBeforeLog($sFile);
 		
 		if ($bFindLogs) {
 			$mSubject = $sMessage = '{{fl}}';
@@ -370,7 +370,7 @@ class ODT {
 	
 	
 	
-	public static function logClear () {
+	private static function vClearLog () {
 		
 		$oStream = fopen(self::$sLogBasePath . '/' . self::$sQuickLogFile, 'w') or die('could not open ' . self::$sLogBasePath . '/' . self::$sQuickLogFile);
 		fclose($oStream);
@@ -380,7 +380,7 @@ class ODT {
 	
 	
 	
-	public static function beforeLog ($sFile) {
+	private static function vBeforeLog ($sFile) {
 		
 		if (!isset(self::$aDateTagged[$sFile])) {
 			self::$aDateTagged[$sFile] = true;
@@ -467,7 +467,7 @@ class ODT {
 		if ($mValue !== '[nonce_HFxT2kjM8CRwNCqN]') {
 			self::dump($mValue, $iDepth, $aExtraParams, $iTabs, $bHtml, $iCutFunctions + 1);
 		}
-		exit();
+		exit;
 		
 	}
 	
@@ -634,7 +634,7 @@ class ODT {
 			self::$iJavascriptIdCounter ++;
 			if ($bHtml) {
 				$sToggleJS = 'var oNode = document.getElementById(\'js_toggle_' . self::$iJavascriptIdCounter . '\'); if (oNode.style.display == \'none\') { oNode.style.display = \'block\'; } else { oNode.style.display = \'none\'; }';
-				$sReturn .= ' <span style="cursor: pointer; color: #484;" onclick="javascript:' . $sToggleJS . '">&curren;</span><div id="js_toggle_' . self::$iJavascriptIdCounter . '">';
+				$sReturn .= ' <span style="cursor: pointer; color: #484;" onclick="javascript:' . $sToggleJS . '">&curren;</span><div style="display:' . (self::$bClosedMode ? 'none' : 'block')  . ';" id="js_toggle_' . self::$iJavascriptIdCounter . '">';
 			}
 			/// klappen END
 			
@@ -852,10 +852,10 @@ class ODT {
 	public static function sGetExecutionTimeStackHtml () {
 		return Profiler::sGetExecutionTimeStackHtml();
 	}
-	public static function vStartMeasurement ($sMeasurementKey) {
+	public static function vStartMeasurement ($sMeasurementKey = null) {
 		return Profiler::vStartMeasurement($sMeasurementKey);
 	}
-	public static function vStopMeasurement ($sMeasurementKey) {
+	public static function vStopMeasurement ($sMeasurementKey = null) {
 		return Profiler::vStopMeasurement($sMeasurementKey);
 	}
 	
