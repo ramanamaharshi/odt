@@ -4,8 +4,8 @@ class RequestTest {
 	
 	
 	
-	public static $sRequestStoreKey = 'requests';
-	public static $iMaxRequestsStored = 8;
+	public static $sRequestODTStoreKey = 'requests';
+	public static $iMaxRequestsODTStored = 8;
 	
 	
 	
@@ -19,7 +19,7 @@ class RequestTest {
 			self::vRepeatRequest($_REQUEST['request_id']);
 		} else if ($bRecordAll || isset($_REQUEST['record_request'])) {
 			if (!$_REQUEST['this_is_a_request_test']) {
-				self::vStoreRequest();
+				self::vODTStoreRequest();
 			}
 		}
 		
@@ -31,7 +31,7 @@ class RequestTest {
 	public static function sDashboard () {
 		
 		$sHTML = '';
-		ODT::dump(Store::get(self::$sRequestStoreKey));
+		ODT::dump(ODTStore::get(self::$sRequestODTStoreKey));
 		$aRequests = self::aGetRequests();
 		foreach ($aRequests as $aRequest) {
 			$sMethod = $aRequest['SERVER']['REQUEST_METHOD'];
@@ -105,7 +105,7 @@ ODT::vExit($aReturn);
 	
 	
 	
-	public static function vStoreRequest () {
+	public static function vODTStoreRequest () {
 		
 		self::aAddRequest(array(
 			 'sID'		=>	'' . time() . ''
@@ -120,7 +120,7 @@ ODT::vExit($aReturn);
 	
 	public static function aGetRequests () {
 		
-		return Store::get(self::$sRequestStoreKey);
+		return ODTStore::get(self::$sRequestODTStoreKey);
 		
 	}
 	
@@ -129,15 +129,15 @@ ODT::vExit($aReturn);
 	
 	public static function aAddRequest ($aRequest) {
 		
-		$aRequests = Store::get(self::$sRequestStoreKey);
+		$aRequests = ODTStore::get(self::$sRequestODTStoreKey);
 		if (!$aRequests) {
 			$aRequests = array();
 		}
 		$aRequests []= $aRequest;
-		if (count($aRequests) > self::$iMaxRequestsStored) {
-			array_splice($aRequests, 0, count($aRequests) - self::$iMaxRequestsStored);
+		if (count($aRequests) > self::$iMaxRequestsODTStored) {
+			array_splice($aRequests, 0, count($aRequests) - self::$iMaxRequestsODTStored);
 		}
-		Store::set(self::$sRequestStoreKey, $aRequests);
+		ODTStore::set(self::$sRequestODTStoreKey, $aRequests);
 		return $aRequests;
 		
 	}

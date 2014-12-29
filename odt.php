@@ -24,7 +24,7 @@ class ODT {
 	public static $sQuickLogFile = 'odt.quick.log';
 	public static $sPersistentLogFile = 'odt.persistent.log';
 	
-    private static $bLogCleared = false;
+	private static $bLogCleared = false;
 	private static $oLogStream = null;
 	private static $oPersistentLogStream = null;
 	private static $iJavascriptIdCounter = 0;
@@ -47,7 +47,7 @@ class ODT {
 		,'string_b'	=>	'#008000'
 		,'number'	=>	'#606000'
 	);
-    
+	
 	
 	
 	
@@ -70,7 +70,7 @@ class ODT {
 		}
 		self::$sLogBasePath = realpath(self::$sLogBasePath);
 		self::$sBasePath = realpath(self::$sBasePath);
-        
+		
 		if (isset(self::$aActivationRequest) && count(self::$aActivationRequest)) {
 			foreach (self::$aActivationRequest as $sKey => $sValue) {
 				if (!isset($_REQUEST[$sKey]) || $_REQUEST[$sKey] != $sValue) {
@@ -235,11 +235,11 @@ class ODT {
 	
 	
 	
-	public static function ctf ($sSpecial = '{{ctf}}') {
-		
-		$sParsed = self::sParseSpecial($sSpecial, 1);
-		self::ec($sParsed);
-		
+	public static function vFL () {
+		self::ec(self::sParseSpecial('{{fl}}', 1));
+	}
+	public static function vCTF () {
+		self::ec(self::sParseSpecial('{{ctf}}', 1));
 	}
 	
 	
@@ -384,7 +384,7 @@ class ODT {
 		
 		if (!isset(self::$aDateTagged[$sFile])) {
 			self::$aDateTagged[$sFile] = true;
-            $sDateString = date('y-m-d  H:i:s');
+			$sDateString = date('y-m-d  H:i:s');
 			$sDateTag = "\n\n" . $sDateString . "\n";
 			self::log($sDateTag, $sFile);
 		}
@@ -533,9 +533,9 @@ class ODT {
 		
 		if (is_string($mThing)) {
 			$sString = $mThing;
-            if (!mb_check_encoding($sString, 'UTF-8')) {
-                $sString = utf8_encode($sString);
-            }
+			if (!mb_check_encoding($sString, 'UTF-8')) {
+				$sString = utf8_encode($sString);
+			}
 			$sReturn = $sString;
 			if ($iDown == 0) {
 				$sReturn = self::sParseSpecial($sReturn, $iCutFunctions + 1);
@@ -552,8 +552,8 @@ class ODT {
 				$sReturn = self::sColorWrap($sReturn, $sColorWrap);
 			}
 			if ($bFindValue) {
-                $sFindValuePreg = $aExtraParams['sFindValue'];
-                $sFindValuePreg = '/' . trim($sFindValuePreg, '/') . '/';
+				$sFindValuePreg = $aExtraParams['sFindValue'];
+				$sFindValuePreg = '/' . trim($sFindValuePreg, '/') . '/';
 				if (preg_match($sFindValuePreg, $sString) !== 1) {
 					$sReturn = null;
 				}

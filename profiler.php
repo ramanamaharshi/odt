@@ -11,6 +11,7 @@ class Profiler {
 	private static $aExecutionTimes = array();
 	private static $aExecutionStack = array();
 	private static $aExecutionStackTimes = array();
+	private static $aSingleMeasurements = array();
 	
 	
 	
@@ -75,19 +76,29 @@ class Profiler {
 	
 	
 	
-	public static function vStartMeasurement ($sMeasurementKey) {
+	public static function vStartMeasurement ($sMeasurementKey = null) {
 		
-		if ($sMeasurementKey === self::$sTimeKey) $sMeasurementKey = '_';
-		
-		$aParent = &self::$aExecutionTimes;
-		foreach (self::$aExecutionStack as $sExecutionStackItem) {
-			$aParent = &$aParent[$sExecutionStackItem];
+		if (!$sMeasurementKey) {
+			
+			$sSingleKey = '' . count(self::$aSingleMeasurements) . '';
+			self::$aSingleMeasurements[$sSingleKey] = microtime(true);
+			return $sSingleKey;
+			
+		} else {
+			
+			if ($sMeasurementKey === self::$sTimeKey) $sMeasurementKey = '_';
+			
+			$aParent = &self::$aExecutionTimes;
+			foreach (self::$aExecutionStack as $sExecutionStackItem) {
+				$aParent = &$aParent[$sExecutionStackItem];
+			}
+			$aParent[$sMeasurementKey] = array();
+			$aParent[$sMeasurementKey][self::$sTimeKey] = -1;
+			
+			array_push(self::$aExecutionStack, $sMeasurementKey);
+			self::$aExecutionStackTimes[$sMeasurementKey] = microtime(true);
+			
 		}
-		$aParent[$sMeasurementKey] = array();
-		$aParent[$sMeasurementKey][self::$sTimeKey] = -1;
-		
-		array_push(self::$aExecutionStack, $sMeasurementKey);
-		self::$aExecutionStackTimes[$sMeasurementKey] = microtime(true);
 		
 	}
 	
@@ -96,20 +107,29 @@ class Profiler {
 	
 	public static function vStopMeasurement ($sMeasurementKey) {
 		
-		if ($sMeasurementKey === self::$sTimeKey) $sMeasurementKey = '_';
-		
-		$sLastStackItem = array_pop(self::$aExecutionStack);
-		if ($sLastStackItem != $sMeasurementKey) {
-			exit('error in vStopMeasurement: ' . $sLastStackItem . ' != ' . $sMeasurementKey);
+		if (isset(self::$aSingleMeasurements[$sMeasurementKey])) {
+			
+			self::$aSingleMeasurements[$sMeasurementKey] = microtime(true) - self::$aSingleMeasurements[$sMeasurementKey];
+			return self::$aSingleMeasurements[$sMeasurementKey];
+			
+		} else {
+			
+			if ($sMeasurementKey === self::$sTimeKey) $sMeasurementKey = '_';
+			
+			$sLastStackItem = array_pop(self::$aExecutionStack);
+			if ($sLastStackItem != $sMeasurementKey) {
+				exit('error in vStopMeasurement: ' . $sLastStackItem . ' != ' . $sMeasurementKey);
+			}
+			$nStackTimeItem = self::$aExecutionStackTimes[$sLastStackItem];
+			unset(self::$aExecutionStackTimes[$sLastStackItem]);
+			
+			$aParent = &self::$aExecutionTimes;
+			foreach (self::$aExecutionStack as $sExecutionStackItem) {
+				$aParent = &$aParent[$sExecutionStackItem];
+			}
+			$aParent[$sMeasurementKey][self::$sTimeKey] = microtime(true) - $nStackTimeItem;
+			
 		}
-		$nStackTimeItem = self::$aExecutionStackTimes[$sLastStackItem];
-		unset(self::$aExecutionStackTimes[$sLastStackItem]);
-		
-		$aParent = &self::$aExecutionTimes;
-		foreach (self::$aExecutionStack as $sExecutionStackItem) {
-			$aParent = &$aParent[$sExecutionStackItem];
-		}
-		$aParent[$sMeasurementKey][self::$sTimeKey] = microtime(true) - $nStackTimeItem;
 		
 	}
 	

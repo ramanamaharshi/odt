@@ -1,24 +1,24 @@
 <?php
-class Store {
+class ODTStore {
 	
 	
 	
 	
-	private static $sStoreDir;
+	private static $sODTStoreDir;
 	private static $aCache = array();
 	
 	
 	
 	
-	public static function init ($sStoreDir = null) {
+	public static function init ($sODTStoreDir = null) {
 		
-		if (!$sStoreDir) {
-			$sStoreDir = ODT::$sLogBasePath;
+		if (!$sODTStoreDir) {
+			$sODTStoreDir = ODT::$sLogBasePath;
 		} else {
-			if (substr($sStoreDir, 0, 1) == '/') {
-				self::$sStoreDir = $sStoreDir . '/';
+			if (substr($sODTStoreDir, 0, 1) == '/') {
+				self::$sODTStoreDir = $sODTStoreDir . '/';
 			} else {
-				self::$sStoreDir = ODT::$sBasePath . '/' . $sStoreDir . '/';
+				self::$sODTStoreDir = ODT::$sBasePath . '/' . $sODTStoreDir . '/';
 			}
 		}
 		
@@ -60,7 +60,7 @@ class Store {
 	
 	public static function sFile ($sKey) {
 		
-		return self::$sStoreDir . $sKey . '.store';
+		return self::$sODTStoreDir . $sKey . '.ODTStore';
 		
 	}
 	
