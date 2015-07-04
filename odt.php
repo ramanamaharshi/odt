@@ -433,11 +433,11 @@ class ODT {
 	
 	
 	
-	public static function dumpStack ($iCutFunctions = 0) {
+	public static function dumpStack ($iCutFunctions = 0, $bPlainToHtml = true) {
 		
 		$aStackAsStringArray = self::aGetStackAsStringArray($iCutFunctions + 1);
 		$sStack = implode('<br />', $aStackAsStringArray);
-		self::ec($sStack, '', true, $iCutFunctions + 1);
+		self::ec($sStack, '', $bPlainToHtml, $iCutFunctions + 1);
 		
 	}
 	
@@ -475,6 +475,9 @@ class ODT {
 	
 	
 	public static function dump ($mValue, $iDepth = -1, $aExtraParams = array(), $iTabs = 0, $bHtml = true, $iCutFunctions = 0) {
+		return self::vDump($mValue, $iDepth, $aExtraParams, $iTabs, $bHtml, $iCutFunctions);
+	}
+	public static function vDump ($mValue, $iDepth = -1, $aExtraParams = array(), $iTabs = 0, $bHtml = true, $iCutFunctions = 0) {
 		
 		if (!self::$bLog) return;
 		$sString = self::toString($mValue, $iDepth, $aExtraParams, $iTabs, $bHtml, $iCutFunctions + 1, 0);
