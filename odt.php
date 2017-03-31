@@ -14,6 +14,7 @@ class ODT {
 	public static $bClosedMode = false;
 	
 	public static $bLog = true;
+	public static $bHtmlMode = true;
 	public static $iDumpFontSize = 13;
 	public static $sDumpColor = '#000000';
 	public static $sDumpBackgroundColor = '#FFFFFF';
@@ -258,7 +259,7 @@ class ODT {
 		
 		if (self::$bFindDumpsAndLogs) {
 			self::$bFindDumpsAndLogs = false;
-			self::log(self::toString('{{file}} : {{line}}', 1, array(), $iTabs, $bHtml, $iCutFunctions));
+			self::log(self::toString('{{file}} : {{line}}', 1, array(), $iTabs, false, $iCutFunctions));
 			self::$bFindDumpsAndLogs = true;
 		}
 		
@@ -415,9 +416,13 @@ class ODT {
 			self::sHTMLify($sString);
 		}
 		
-		echo "\n" . '<div data-fl="' . htmlentities(self::sParseSpecial('{{fl}}', $iCutFunctions + 1)) . '">';
-		echo "\n" . '<div style="overflow-x:auto;overflow-y:hidden;clear:both;font-family:monospace;text-transform:none;background-color:' . self::$sDumpBackgroundColor . ';color:' . self::$sDumpColor . ';padding:3px;margin:3px 0;font-size:' . self::$iDumpFontSize . 'px;' . $sAdditionalStyles . '">' . $sString . '</div>' . "\n";
-		echo "\n" . '</div>';
+		if ($bPlainToHtml) {
+			echo "\n" . '<div data-fl="' . htmlentities(self::sParseSpecial('{{fl}}', $iCutFunctions + 1)) . '">';
+			echo "\n" . '<div style="overflow-x:auto;overflow-y:hidden;clear:both;font-family:monospace;text-transform:none;background-color:' . self::$sDumpBackgroundColor . ';color:' . self::$sDumpColor . ';padding:3px;margin:3px 0;font-size:' . self::$iDumpFontSize . 'px;' . $sAdditionalStyles . '">' . $sString . '</div>' . "\n";
+			echo "\n" . '</div>';
+		} else {
+			echo $sString . "\n";
+		}
 		
 	}
 	
@@ -433,10 +438,14 @@ class ODT {
 	
 	
 	
-	public static function dumpStack ($iCutFunctions = 0, $bPlainToHtml = true) {
+	public static function dumpStack ($iCutFunctions = 0, $bPlainToHtml = '[default]') {
+		return self::vDumpStack($iCutFunctions, $bPlainToHtml);
+	}
+	public static function vDumpStack ($iCutFunctions = 0, $bPlainToHtml = '[default]') {
 		
+		if ($bPlainToHtml == '[default]') $bPlainToHtml = self::$bHtmlMode;
 		$aStackAsStringArray = self::aGetStackAsStringArray($iCutFunctions + 1);
-		$sStack = implode('<br />', $aStackAsStringArray);
+		$sStack = implode(self::$bHtmlMode ? '<br />' : "\n", $aStackAsStringArray);
 		self::ec($sStack, '', $bPlainToHtml, $iCutFunctions + 1);
 		
 	}
@@ -461,11 +470,11 @@ class ODT {
 	
 	
 	
-	public static function vExit ($mValue = '[nonce_HFxT2kjM8CRwNCqN]', $iDepth = -1, $aExtraParams = array(), $iTabs = 0, $bHtml = true, $iCutFunctions = 0) {
+	public static function vExit ($mValue = '[nonce_HFxT2kjM8CRwNCqN]', $iDepth = -1, $aExtraParams = array(), $iTabs = 0, $bHtml = '[default]', $iCutFunctions = 0) {
 		
 		if (!self::$bLog) return;
 		if ($mValue !== '[nonce_HFxT2kjM8CRwNCqN]') {
-			self::dump($mValue, $iDepth, $aExtraParams, $iTabs, $bHtml, $iCutFunctions + 1);
+			self::vDump($mValue, $iDepth, $aExtraParams, $iTabs, $bHtml, $iCutFunctions + 1);
 		}
 		exit;
 		
@@ -474,12 +483,13 @@ class ODT {
 	
 	
 	
-	public static function dump ($mValue, $iDepth = -1, $aExtraParams = array(), $iTabs = 0, $bHtml = true, $iCutFunctions = 0) {
+	public static function dump ($mValue, $iDepth = -1, $aExtraParams = array(), $iTabs = 0, $bHtml = '[default]', $iCutFunctions = 0) {
 		return self::vDump($mValue, $iDepth, $aExtraParams, $iTabs, $bHtml, $iCutFunctions);
 	}
-	public static function vDump ($mValue, $iDepth = -1, $aExtraParams = array(), $iTabs = 0, $bHtml = true, $iCutFunctions = 0) {
+	public static function vDump ($mValue, $iDepth = -1, $aExtraParams = array(), $iTabs = 0, $bHtml = '[default]', $iCutFunctions = 0) {
 		
 		if (!self::$bLog) return;
+		if ($bHtml == '[default]') $bHtml = self::$bHtmlMode;
 		$sString = self::toString($mValue, $iDepth, $aExtraParams, $iTabs, $bHtml, $iCutFunctions + 1, 0);
 		$sAdditionalStyles = '';
 		if (isset($aExtraParams['aAdditionalStyles'])) {
